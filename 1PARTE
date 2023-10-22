@@ -1,0 +1,163 @@
+import pygame
+import sys
+from pygame.locals import *
+
+pygame.init()
+
+# VARIÁVEIS DE VALOR CONSTANTE
+LARGURA = 800
+ALTURA = 800
+
+PRETO = (0, 0, 0)
+BRANCO = (255, 255, 255)
+CINZA = (100, 100, 100)
+VERMELHO = (120, 0, 0)
+VERDE_ESCURO = (0, 120, 0)
+VERDE_CLARO = (0, 255, 0)
+VERMELHO_CLARO = (255, 0, 0)
+AZUL = (0, 0, 255)
+COR_FUNDO = (54, 54, 54)
+COR_TABULEIRO = (0, 31, 0)
+
+# INICIANDO PROGRAMAÇÃO DO DISPLAY
+display = pygame.display.set_mode((800, 800))
+pygame.display.set_caption('Jogo de Damas')
+pygame.font.init()
+clock = pygame.time.Clock()
+
+# Classe principal
+class Jogo:
+    # Classe para controlar o status do jogo
+    def __init__(self):
+        self.status = 'Jogando'
+        self.turno = 1
+        self.jogadores = ('x', 'o')
+        self.celula_selecionada = None
+        self.pulando = False
+        self.matriz_jogadores = [['x','-','x','-','x','-','x','-'],
+                                ['-','x','-','x','-','x','-','x'],
+                                ['x','-','x','-','x','-','x','-'],
+                                ['-','-','-','-','-','-','-','-'],
+                                ['-','-','-','-','-','-','-','-'],
+                                ['-','o','-','o','-','o','-','o'],
+                                ['o','-','o','-','o','-','o','-'],
+                                ['-','o','-','o','-','o','-','o']]
+
+    def avaliar_clique(self, pos):
+        turno = self.turno % 2
+        if self.status == "Jogando":
+            linha, coluna = self.linha_clicada(pos), self.coluna_clicada(pos)
+            if self.celula_selecionada:
+                movimento = self.e_movimento_valido(self.jogadores[turno], self.celula_selecionada, linha, coluna)
+                if movimento[0]:
+                    self.mover(self.jogadores[turno], self.celula_selecionada, linha, coluna, movimento[1])
+                elif linha == self.celula_selecionada[0] and coluna == self.celula_selecionada[1]:
+                    movs = self.movimento_obrigatorio(self.celula_selecionada)
+                    if movs[0] == []:
+                        if self.pulando:
+                            self.pulando = False
+                            self.proximo_turno()
+                    self.celula_selecionada = None
+
+    def linha_clicada(self, pos):
+        return pos[1] // 100
+
+    def coluna_clicada(self, pos):
+        return pos[0] // 100
+
+
+def mover(self, jogador, celula_selecionada, linha, coluna, direcao):
+    linha_inicial, coluna_inicial = celula_selecionada
+
+    # Verificar se o movimento está na diagonal
+    if abs(linha - linha_inicial) == 1 and abs(coluna - coluna_inicial) == 1:
+        # Movimento válido para uma casa na diagonal
+
+        # Atualizar a matriz de jogadores para refletir o movimento
+        self.matriz_jogadores[linha][coluna] = jogador
+        self.matriz_jogadores[linha_inicial][coluna_inicial] = '-'
+
+        # Verificar se a peça chegou à última linha para se tornar uma rainha
+        if jogador == 'x' and linha == 7:
+            self.matriz_jogadores[linha][coluna] = 'X'
+        elif jogador == 'o' and linha == 0:
+            self.matriz_jogadores[linha][coluna] = 'O'
+
+        # Prossiguir para o próximo turno
+        self.proximo_turno()
+
+def e_movimento_valido(self, jogador, celula_selecionada, linha, coluna):
+    linha_selecionada, coluna_selecionada = celula_selecionada
+
+    # Verificar se a célula de destino está dentro dos limites do tabuleiro
+    if 0 <= linha < 8 and 0 <= coluna < 8:
+        # Verificar se a célula de destino está vazia
+        if self.matriz_jogadores[linha][coluna] == '-':
+            # Verificar se o movimento está na diagonal
+            if abs(linha - linha_selecionada) == 1 and abs(coluna - coluna_selecionada) == 1:
+                # Verificar as regras de movimento dependendo do jogador
+                if jogador == 'x':
+                    if linha > linha_selecionada:
+                        return True
+                elif jogador == 'o':
+                    if linha < linha_selecionada:
+                        return True
+                elif jogador == 'X' or jogador == 'O':
+                    return True
+
+    return False
+
+
+def proximo_turno(self):
+        self.turno += 1
+
+    # ... (outros métodos e atributos)
+
+def desenhar_tabuleiro():
+    for linha in range(8):
+        for coluna in range(8):
+            cor_casa = COR_TABULEIRO if (linha + coluna) % 2 == 0 else BRANCO
+            pygame.draw.rect(display, cor_casa, (coluna * 100, linha * 100, 100, 100))
+
+def desenhar_pecas(matriz_jogadores):
+    # Desenhar as peças no tabuleiro
+    for l in range(len(matriz_jogadores)):
+        for c in range(len(matriz_jogadores[l])):
+            elemento = matriz_jogadores[l][c]
+            if elemento != '-':
+                x = ALTURA / 8 * c + ALTURA / 16
+                y = ALTURA / 8 * l + ALTURA / 16
+
+                if elemento.lower() == 'x':
+                    pygame.draw.circle(display, VERMELHO, (x, y), 20, 0)
+                    if elemento == 'X':
+                        pygame.draw.circle(display, PRETO, (x, y), 10, 0)
+                        pygame.draw.circle(display, AZUL, (x, y), 5, 0)
+                else:
+                    pygame.draw.circle(display, BRANCO, (x, y), 20, 0)
+                    if elemento == 'O':
+                        pygame.draw.circle(display, PRETO, (x, y), 10, 0)
+                        pygame.draw.circle(display, AZUL, (x, y), 5, 0)
+
+def main():
+    jogo = Jogo()
+
+    while True:
+        for evento in pygame.event.get():
+            if evento.type == QUIT:
+                pygame.quit()
+                sys.exit()
+
+            if evento.type == MOUSEBUTTONDOWN:
+                if jogo.status == "Jogando":
+                    pos = pygame.mouse.get_pos()
+                    jogo.avaliar_clique(pos)
+
+        desenhar_tabuleiro()
+        desenhar_pecas(jogo.matriz_jogadores)
+
+        pygame.display.update()
+        clock.tick(60)
+
+if __name__ == "__main__":
+    main()
