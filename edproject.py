@@ -561,7 +561,7 @@ def creditos(): # Função para exibir os créditos do jogo
 
 		display.fill(PRETO) # Preenche a tela com a cor preta
 		fonte = pygame.font.SysFont('comicsansms', 20) # Define a fonte para o texto
-		surface_texto, rect_texto = text_objects("", fonte, BRANCO) # Cria um objeto de texto vazio com a fonte e a cor branca
+		surface_texto, rect_texto = text_objects("Programadores: João Arthur, Humberto e Gustavo", fonte, BRANCO) # Cria um objeto de texto vazio com a fonte e a cor branca
 		rect_texto.center = ((LARGURA / 2), ALTURA / 3) # Define o centro do retângulo do texto
 		display.blit(surface_texto, rect_texto) # Desenha o texto na tela
 
